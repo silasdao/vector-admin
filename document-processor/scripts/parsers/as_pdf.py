@@ -18,7 +18,7 @@ def as_pdf(**kwargs):
   if len(pages) == 0:
     print(f"{fullpath} parsing resulted in no pages - nothing to do.")
     return []
-  
+
   # Set doc to the first page so we can still get the metadata from PyMuPDF but without all the unicode issues.
   doc = pages[0]
   del loader
@@ -30,24 +30,27 @@ def as_pdf(**kwargs):
     page_content += unidecode(page.get_text('text'))
 
   if len(page_content) == 0:
-    print(f"Resulting page content was empty - no text could be extracted from the document.")
+    print(
+        "Resulting page content was empty - no text could be extracted from the document."
+    )
     return []
-  
+
   title = doc.metadata.get('title')
   author = doc.metadata.get('author')
   subject = doc.metadata.get('subject')
   metadata = {
-    'id': guid(),
-    'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
-    'title': title if title else f"{filename}{ext}",
-    'docAuthor': author if author else 'No author found',
-    'description': subject if subject else 'No description found.',
-    'docSource': 'pdf file uploaded by the user.',
-    'chunkSource': f"{filename}{ext}",
-    'published': file_creation_time(fullpath),
-    'wordCount': len(page_content), # Technically a letter count :p
-    'pageContent': page_content,
-    'token_count_estimate': len(tokenize(page_content))
+      'id': guid(),
+      'url':
+      f'file://{os.path.abspath(f"{parent_dir}/processed/{filename}{ext}")}',
+      'title': title if title else f"{filename}{ext}",
+      'docAuthor': author if author else 'No author found',
+      'description': subject if subject else 'No description found.',
+      'docSource': 'pdf file uploaded by the user.',
+      'chunkSource': f"{filename}{ext}",
+      'published': file_creation_time(fullpath),
+      'wordCount': len(page_content),
+      'pageContent': page_content,
+      'token_count_estimate': len(tokenize(page_content)),
   }
 
   move_source(parent_dir, f"{filename}{ext}", remove=remove)

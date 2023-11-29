@@ -30,16 +30,15 @@ def as_mbox(**kwargs):
         else:
             content = message.get_payload()
 
-        date_tuple = email.utils.parsedate_tz(message['Date'])
-        if date_tuple:
+        if date_tuple := email.utils.parsedate_tz(message['Date']):
             local_date = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
             date_sent = local_date.strftime("%a, %d %b %Y %H:%M:%S")
         else:
             date_sent = None
-            
+
         data = {
-            'id': guid(), 
-            'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{slugify(filename)}-{guid()}{ext}"),
+            'id': guid(),
+            'url': f'file://{os.path.abspath(f"{parent_dir}/processed/{slugify(filename)}-{guid()}{ext}")}',
             'title': f"{filename}{ext}",
             'description': "a custom file uploaded by the user.",
             'published': file_creation_time(fullpath),
@@ -49,7 +48,7 @@ def as_mbox(**kwargs):
             'date_sent': date_sent,
             'wordCount': len(content),
             'pageContent': content,
-            'token_count_estimate': len(tokenize(content))
+            'token_count_estimate': len(tokenize(content)),
         }
         metadata.append(data)
 
